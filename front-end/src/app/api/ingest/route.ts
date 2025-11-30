@@ -1,10 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+import supabase from "@/lib/useSupabaseClient";
 
 export async function POST(req: Request) {
   const secret = req.headers.get("device-secret");
