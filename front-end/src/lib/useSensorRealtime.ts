@@ -50,6 +50,10 @@ export function useSensorRealtime(deviceId: string, initialLimit = 200) {
           .order("created_at", { ascending: false })
           .limit(initialLimit);
 
+        console.log("DEBUG: Fetching for device:", deviceId);
+        console.log("DEBUG: Supabase rows:", rows);
+        console.log("DEBUG: Supabase error:", fetchError);
+
         if (!mounted) return;
 
         if (fetchError) {
