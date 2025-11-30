@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -41,9 +41,44 @@ export default function RealtimeDashboard({
             temperature: 0,
             humidity: 0,
             time: "--:--",
+            created_at: null,
           },
     [data]
   );
+
+  const lastUpdate = latest?.created_at
+    ? new Date(latest.created_at).getTime()
+    : null;
+
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setNow(Date.now()), 0);
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const diffSeconds =
+    lastUpdate && now ? Math.floor((now - lastUpdate) / 1000) : null;
+
+  const isOnline = diffSeconds !== null && diffSeconds < 60;
+
+  const formatRelativeTime = (timestamp: number, currentTimestamp: number) => {
+    const diff = Math.floor((currentTimestamp - timestamp) / 1000);
+
+    if (diff < 60) {
+      return `${diff} seconds ago`;
+    } else if (diff < 3600) {
+      return `${Math.floor(diff / 60)} minutes ago`;
+    } else if (diff < 86400) {
+      return `${Math.floor(diff / 3600)} hours ago`;
+    } else {
+      return `${Math.floor(diff / 86400)} days ago`;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-b from-[#07070d] via-[#0b0b12] to-[#05050a] text-slate-100 p-6 font-sans">
@@ -70,10 +105,13 @@ export default function RealtimeDashboard({
                 {deviceId}
               </div>
             </div>
+
             <div className="text-right">
               <div className="text-xs text-slate-400">Last update</div>
               <div className="font-mono bg-[#0f1724] px-3 py-1 rounded-md text-sm">
-                {latest.time}
+                {lastUpdate && now
+                  ? formatRelativeTime(lastUpdate, now)
+                  : latest.time}
               </div>
             </div>
           </div>
@@ -146,8 +184,20 @@ export default function RealtimeDashboard({
             <div>
               <div className="text-xs text-slate-400">Device Status</div>
               <div className="flex items-center gap-3 mt-2">
-                <span className="inline-block w-3 h-3 rounded-full bg-emerald-400 shadow-sm" />
-                <div className="text-sm font-medium">Online</div>
+                <span
+                  className={`inline-block w-3 h-3 rounded-full shadow-sm ${
+                    isOnline ? "bg-emerald-400" : "bg-rose-500"
+                  }`}
+                />
+                <div className="text-sm font-medium">
+                  {isOnline
+                    ? "Online"
+                    : `Offline (${
+                        lastUpdate && now
+                          ? formatRelativeTime(lastUpdate, now)
+                          : "--"
+                      })`}
+                </div>
               </div>
             </div>
           </motion.div>
