@@ -83,35 +83,38 @@ export function useSensorRealtime(deviceId: string, initialLimit = 200) {
 
     fetchInitial();
 
-    const channel = supabase.channel(`sensor_updates_${deviceId}`).on(
-      "postgres_changes",
-      {
-        event: "INSERT",
-        schema: "public",
-        table: "sensor_data",
-        filter: `device_id=eq.${deviceId}`,
-      },
-      (payload) => {
-        const r = payload.new as SensorDataRow;
-        const entry: SensorDataEntry = {
-          id: r.id,
-          device_id: r.device_id,
-          temperature: Number(r.temperature),
-          humidity: Number(r.humidity),
-          created_at: r.created_at,
-          time: new Date(r.created_at).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        };
+    const channel = supabase
+      .channel(`sensor_updates_${deviceId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "sensor_data",
+          filter: `device_id=eq.${deviceId}`,
+        },
+        (payload) => {
+          const r = payload.new as SensorDataRow;
+          const entry: SensorDataEntry = {
+            id: r.id,
+            device_id: r.device_id,
+            temperature: Number(r.temperature),
+            humidity: Number(r.humidity),
+            created_at: r.created_at,
+            time: new Date(r.created_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          };
 
-        setData((prev) => {
-          const next = [...prev, entry];
-          if (next.length > 2000) next.shift();
-          return next;
-        });
-      }
-    );
+          setData((prev) => {
+            const next = [...prev, entry];
+            if (next.length > 2000) next.shift();
+            return next;
+          });
+        }
+      )
+      .subscribe();
 
     return () => {
       mounted = false;

@@ -1,4 +1,4 @@
-#include "config.h"
+#include <config.h>
 
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -42,7 +42,7 @@ void loop() {
 
     http.begin(SERVER_URL);
     http.addHeader("Content-Type", "application/json");
-    http.addHeader("device-secret", String("Bearer ") + DEVICE_SECRET);
+    http.addHeader("Authorization", String("Bearer ") + DEVICE_SECRET);
 
     String json = "{\"device_id\":\"esp32-01\",\"temperature\":";
     json += temp;

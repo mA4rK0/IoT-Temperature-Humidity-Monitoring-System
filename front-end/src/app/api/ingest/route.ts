@@ -14,21 +14,71 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
 });
 
 export async function POST(req: Request) {
-  const secret = req.headers.get("device-secret");
+  try {
+    const headerSecret =
+      req.headers.get("device-secret") ||
+      req.headers.get("x-device-secret") ||
+      req.headers.get("authorization");
 
-  if (!secret || secret !== `Bearer ${process.env.DEVICE_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    console.log("ingest called, headerSecret:", headerSecret);
+
+    if (!headerSecret) {
+      console.warn("no device secret header");
+      return NextResponse.json(
+        { error: "Unauthorized - no header" },
+        { status: 401 }
+      );
+    }
+
+    const expected = `Bearer ${DEVICE_SECRET}`;
+    const allowed =
+      headerSecret === expected ||
+      headerSecret === DEVICE_SECRET ||
+      headerSecret === `Bearer ${process.env.DEVICE_SECRET}`;
+
+    if (!allowed) {
+      console.warn("unauthorized header mismatch", { headerSecret, expected });
+      return NextResponse.json(
+        { error: "Unauthorized - invalid secret" },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+    const { device_id, temperature, humidity } = body || {};
+
+    if (!device_id || (temperature === undefined && humidity === undefined)) {
+      console.warn("bad payload", body);
+      return NextResponse.json(
+        { error: "Bad request - missing fields" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("sensor_data")
+      .insert({
+        device_id,
+        temperature,
+        humidity,
+      })
+      .select();
+
+    if (error) {
+      console.error("supabase insert error:", error);
+      return NextResponse.json(
+        { error: error.message || error },
+        { status: 500 }
+      );
+    }
+
+    console.log("inserted", data?.[0]);
+    return NextResponse.json(
+      { success: true, row: data?.[0] },
+      { status: 201 }
+    );
+  } catch (err) {
+    console.error("ingest handler error:", err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
-
-  const { device_id, temperature, humidity } = await req.json();
-
-  const { error } = await supabase.from("sensor_data").insert({
-    device_id,
-    temperature,
-    humidity,
-  });
-
-  if (error) return NextResponse.json({ error }, { status: 400 });
-
-  return NextResponse.json({ success: true }, { status: 201 });
 }
