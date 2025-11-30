@@ -47,7 +47,7 @@ export function useSensorRealtime(deviceId: string, initialLimit = 200) {
           .from("sensor_data")
           .select("id, device_id, temperature, humidity, created_at")
           .eq("device_id", deviceId)
-          .order("created_at", { ascending: true })
+          .order("created_at", { ascending: false })
           .limit(initialLimit);
 
         if (!mounted) return;
@@ -58,8 +58,8 @@ export function useSensorRealtime(deviceId: string, initialLimit = 200) {
           return;
         }
 
-        const mapped: SensorDataEntry[] = (rows || []).map(
-          (r: SensorDataRow) => ({
+        const mapped: SensorDataEntry[] = (rows || [])
+          .map((r: SensorDataRow) => ({
             id: r.id,
             device_id: r.device_id,
             temperature: Number(r.temperature),
@@ -69,8 +69,8 @@ export function useSensorRealtime(deviceId: string, initialLimit = 200) {
               hour: "2-digit",
               minute: "2-digit",
             }),
-          })
-        );
+          }))
+          .reverse();
 
         setData(mapped);
         setLoading(false);

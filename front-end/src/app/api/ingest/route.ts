@@ -1,5 +1,17 @@
 import { NextResponse } from "next/server";
-import supabase from "@/lib/useSupabaseClient";
+import { createClient } from "@supabase/supabase-js";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY!;
+const DEVICE_SECRET = process.env.DEVICE_SECRET!;
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !DEVICE_SECRET) {
+  throw new Error("Missing required env vars for ingest route");
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+  auth: { persistSession: false },
+});
 
 export async function POST(req: Request) {
   const secret = req.headers.get("device-secret");
