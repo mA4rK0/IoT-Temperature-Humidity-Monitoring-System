@@ -138,11 +138,26 @@ export async function POST(req: Request) {
       }
 
       if (shouldSend) {
+        const TIMEZONE = process.env.TIMEZONE || "Asia/Jakarta";
+
+        const createdAtIso = data?.[0]?.created_at ?? new Date().toISOString();
+        const createdAtDate = new Date(createdAtIso);
+
+        const formattedTime = createdAtDate.toLocaleString("en-US", {
+          timeZone: TIMEZONE,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
         const message = `<b>ALERT</b>\nDevice: <code>${device_id}</code>\nType: ${
           a.type
-        }\nValue: ${a.value}\nTime: ${new Date(
-          data?.[0]?.created_at ?? new Date().toISOString()
-        ).toLocaleString()}\n\nURL: ${
+        }\nValue: ${
+          a.value
+        }\nTime (${TIMEZONE}): ${formattedTime}\nTimestamp (UTC): ${createdAtIso}\n\nURL: ${
           process.env.NEXT_PUBLIC_SITE_URL || "Demo URL"
         }`;
         const sent = await sendTelegramMessage(message);
