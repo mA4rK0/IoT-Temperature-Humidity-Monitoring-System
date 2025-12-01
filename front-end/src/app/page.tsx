@@ -81,13 +81,13 @@ export default function RealtimeDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-[#07070d] via-[#0b0b12] to-[#05050a] text-slate-100 p-6 font-sans">
+    <div className="min-h-screen bg-linear-to-b from-[#07070d] via-[#0b0b12] to-[#05050a] text-slate-100 p-4 md:p-6 font-sans">
       <div className="max-w-6xl mx-auto">
         <motion.header
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex items-center justify-between mb-6"
+          className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6"
         >
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white">
@@ -98,7 +98,7 @@ export default function RealtimeDashboard({
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
             <div className="text-right">
               <div className="text-xs text-slate-400">Device</div>
               <div className="font-mono bg-[#0f1724] px-3 py-1 rounded-md text-sm">
