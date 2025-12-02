@@ -112,8 +112,18 @@ flowchart TD
 
 ### Wiring (ESP32 → DHT22)
 
-![Wiring Diagram](./docs/wiring.png)
-Not Ready Diagram!
+```
+ESP32 Board               DHT22 Module (3-pin)
+┌─────────────────┐       ┌──────────────┐
+│                 │       │              │
+│          [3V3]  ├───────┤ VCC (Pin 1)  │
+│                 │       │              │
+│          [GND]  ├───────┤ GND (Pin 3)  │
+│                 │       │              │
+│          [GPIO4]├───────┤ DATA (Pin 2) │
+│                 │       │              │
+└─────────────────┘       └──────────────┘
+```
 
 ```
 DHT22 VCC → 3.3V  
