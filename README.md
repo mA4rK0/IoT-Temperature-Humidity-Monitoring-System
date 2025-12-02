@@ -16,33 +16,42 @@ alerting system, and mobile-friendly responsive UI.
 # 🧩 System Architecture
 
 ```mermaid
-flowchart LR
+flowchart TD
+  %% Device layer
   subgraph DEVICE["Edge Device"]
-    ESP32["ESP32 + DHT22\n(heartbeat, POST JSON)"]
-    DEVTOOLS["Serial/OTA (dev)"]
+    ESP32["ESP32 (esp32-01) + DHT22<br/>• Read temp & humidity<br/>• Heartbeat (periodic POST)"]
+    DEVTOOLS["Serial / USB / OTA<br/>(development & debug)"]
   end
 
-  WIFI["Wi-Fi / Internet"]
+  %% Network
+  WIFI["Wi-Fi / Internet<br/>(ESP32 → Vercel API)"]
 
-  subgraph VERCEL["Vercel / Next.js API"]
-    API["/api/ingest\nvalidate secret\ninsert -> Supabase\nmaybe send alerts"]
+  %% Server layer
+  subgraph VERCEL["Vercel — Next.js API"]
+    API["/api/ingest<br/>• Validate device-secret header<br/>• Sanitize payload<br/>• Insert → Supabase (sensor_data)<br/>• Trigger alerts & record → alerts table"]
   end
 
+  %% Database & realtime
   subgraph SUPABASE["Supabase"]
-    DB["Postgres: sensor_data\nalerts"]
-    RT["Realtime (INSERT events)"]
+    DB["Postgres: sensor_data table<br/>& alerts table"]
+    RT["Realtime: broadcast INSERT events"]
   end
 
-  DASH["Next.js Dashboard\nRealtime subscribe\nCharts + Status"]
-  TELE["Telegram Bot (Bot API)\nsend alert messages"]
-  CLIENT["Client (Browser / Mobile)"]
+  %% Frontend & clients
+  DASH["Next.js Dashboard<br/>• Realtime subscribe (Supabase)<br/>• Charts, recent readings, device status<br/>• Mobile-optimized UI"]
+  CLIENT["Client: Browser / Mobile"]
 
-  ESP32 -->|POST JSON| WIFI --> API
-  API --> DB
-  DB --> RT
+  %% Alerting
+  TELE["Telegram Bot (Bot API)<br/>• Send alert messages to chat"]
+
+  %% Flow connections (top → bottom)
+  ESP32 -->|POST JSON ✓| WIFI
+  WIFI --> API
+  API -->|write| DB
+  DB -->|broadcast| RT
   RT --> DASH
   DASH --> CLIENT
-  API -->|trigger| TELE
+  API -->|trigger alert| TELE
   DEVTOOLS --> ESP32
 ```
 
