@@ -122,8 +122,7 @@ json += humidity;
 json += "}";
 ```
 
-Full firmware: `/firmware/iot_code.ino`
-Firmware Not Ready!
+Full firmware: `iot_code.ino`
 
 ---
 
@@ -174,12 +173,16 @@ Not Ready
 - `temperature > TEMP_MAX`  
 - `humidity > HUM_MAX` 
 
-### Alert Format: not ready
+### Alert Format:
 ```
-⚠️ ALERT — esp32-01
-Temperature: 42.1°C
-Humidity: 75%
-Time: 14:02
+ALERT
+Device: esp32-01
+Type: humidity_high
+Value: 82.5
+Time (Asia/Jakarta): 12/01/2025, 01:04:26 PM
+Timestamp (UTC): 2025-12-01T06:04:26.085791+00:00
+
+URL: https://io-t-temperature-humidity-monitorin.vercel.app/
 ```
 
 ### Implemented Via:
@@ -203,20 +206,25 @@ Red dot = Offline
 
 ---
 
-# 🔑 Environment Variables not ready
+# 🔑 Environment Variables
 
 ### Server (Vercel)
 ```
-SUPABASE_SERVICE_KEY=xxxx
-DEVICE_SECRET=xxxx
-TELEGRAM_BOT_TOKEN=xxxx
-TELEGRAM_CHAT_ID=xxxx
+SUPABASE_SERVICE_KEY=YOUR_SUPABASE_SERVICE_KEY
+DEVICE_SECRET=YOUR_CUSTOM_DEVICE_SECRET
+TELEGRAM_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID=YOUR_TELEGRAM_CHAT_ID_API
 ```
 
 ### Client
 ```
-NEXT_PUBLIC_SUPABASE_URL=xxxx
-NEXT_PUBLIC_SUPABASE_ANON_KEY=xxxx
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SITE_URL=YOUR_PUBLIC_SITE_URL
+ALERT_TEMP_THRESHOLD=YOUR_TEMP_THRESHOLD
+ALERT_HUM_THRESHOLD=YOUR_HUM_THRESHOLD
+ALERT_MINUTES_BETWEEN=YOUR_MINUTES_BETWEEN
+TIMEZONE=YOUR_TIMEZONE
 ```
 
 ---
@@ -256,20 +264,33 @@ select * from supabase_realtime.add_realtime_publication('sensor_data');
 # 📦 Folder Structure not ready
 
 ```
-📦 IoT-Temperature-Humidity-Monitoring-System
- ┣ 📁 app
- ┃ ┣ 📁 api
- ┃ ┃ ┗ 📁 ingest
- ┃ ┃   ┗ route.ts
- ┣ 📁 lib
- ┃ ┗ useSensorRealtime.ts
- ┣ 📁 firmware
- ┃ ┗ iot_code.ino
- ┣ 📁 docs
- ┃ ┣ architecture.png
- ┃ ┣ dashboard.png
- ┃ ┗ wiring.png
- ┗ README.md
+IoT-Temperature-Humidity-Monitoring-System
+├── config.example.h
+├── config.h
+├── iot_code.ino
+└── front-end
+    ├── eslint.config.mjs
+    ├── example.env
+    ├── next-env.d.ts
+    ├── next.config.ts
+    ├── package.json
+    ├── pnpm-lock.yaml
+    ├── postcss.config.mjs
+    ├── tsconfig.json
+    ├── public
+    │   └── vercel.svg
+    └── src
+        ├── app
+        │   ├── api
+        │   │   └── ingest
+        │   │       └── route.ts
+        │   ├── favicon.ico
+        │   ├── globals.css
+        │   ├── layout.tsx
+        │   └── page.tsx
+        └── lib
+            ├── useSensorRealtime.ts
+            └── useSupabaseClient.ts
 ```
 
 ---
@@ -287,7 +308,7 @@ select * from supabase_realtime.add_realtime_publication('sensor_data');
 
 # 👤 Author
 
-**Mrc Ou**  
+**Marko**  
 IoT • Embedded Systems • Robotics • Cloud Integration  
 
 > Building real-world systems that connect hardware, cloud, and people.
