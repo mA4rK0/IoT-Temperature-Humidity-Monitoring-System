@@ -15,8 +15,36 @@ alerting system, and mobile-friendly responsive UI.
 
 # 🧩 System Architecture
 
-![Architecture Diagram](./docs/architecture.png)
-Not Ready Diagram!
+```mermaid
+flowchart LR
+  subgraph DEVICE["Edge Device"]
+    ESP32["ESP32 + DHT22\n(heartbeat, POST JSON)"]
+    DEVTOOLS["Serial/OTA (dev)"]
+  end
+
+  WIFI["Wi-Fi / Internet"]
+
+  subgraph VERCEL["Vercel / Next.js API"]
+    API["/api/ingest\nvalidate secret\ninsert -> Supabase\nmaybe send alerts"]
+  end
+
+  subgraph SUPABASE["Supabase"]
+    DB["Postgres: sensor_data\nalerts"]
+    RT["Realtime (INSERT events)"]
+  end
+
+  DASH["Next.js Dashboard\nRealtime subscribe\nCharts + Status"]
+  TELE["Telegram Bot (Bot API)\nsend alert messages"]
+  CLIENT["Client (Browser / Mobile)"]
+
+  ESP32 -->|POST JSON| WIFI --> API
+  API --> DB
+  DB --> RT
+  RT --> DASH
+  DASH --> CLIENT
+  API -->|trigger| TELE
+  DEVTOOLS --> ESP32
+```
 
 ### **Flow Summary**
 1. **ESP32** reads temperature & humidity from a **DHT22** sensor.  
