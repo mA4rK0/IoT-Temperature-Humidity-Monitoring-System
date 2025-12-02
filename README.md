@@ -316,9 +316,9 @@ IoT-Temperature-Humidity-Monitoring-System
 ├── config.example.h
 ├── config.h
 ├── docs/
+│   └── iot-temperature-humidity-dashboard.png
 ├── iot_code.ino
-└── front-end
-    ├── README.md
+└── front-end/
     ├── eslint.config.mjs
     ├── example.env
     ├── next-env.d.ts
@@ -327,18 +327,18 @@ IoT-Temperature-Humidity-Monitoring-System
     ├── pnpm-lock.yaml
     ├── postcss.config.mjs
     ├── tsconfig.json
-    ├── public
+    ├── public/
     │   └── vercel.svg
-    └── src
-        ├── app
-        │   ├── api
-        │   │   └── ingest
+    └── src/
+        ├── app/
+        │   ├── api/
+        │   │   └── ingest/
         │   │       └── route.ts
         │   ├── favicon.ico
         │   ├── globals.css
         │   ├── layout.tsx
         │   └── page.tsx
-        └── lib
+        └── lib/
             ├── useSensorRealtime.ts
             └── useSupabaseClient.ts
 ```
