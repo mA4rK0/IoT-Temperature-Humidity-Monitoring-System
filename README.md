@@ -28,7 +28,7 @@ flowchart TD
 
   %% Server layer
   subgraph VERCEL["Vercel — Next.js API"]
-    API["/api/ingest<br/>• Validate device-secret header<br/>• Sanitize payload<br/>• Insert → Supabase (sensor_data)<br/>• Trigger alerts & record → alerts table"]
+    API["/api/ingest<br/>• Validate Authorization header<br/>• Sanitize payload<br/>• Insert → Supabase (sensor_data)<br/>• Trigger alerts & record → alerts table"]
   end
 
   %% Database & realtime
@@ -150,7 +150,7 @@ DHT22 Data → GPIO 4
 ```cpp
 http.begin(SERVER_URL);
 http.addHeader("Content-Type", "application/json");
-http.addHeader("device-secret", String("Bearer ") + DEVICE_SECRET);
+http.addHeader("Authorization", String("Bearer ") + DEVICE_SECRET);
 
 String json = "{\"device_id\":\"esp32-01\",\"temperature\":";
 json += temp;
@@ -169,8 +169,8 @@ Full firmware: `iot_code.ino`
 
 ```ts
 const headerSecret =
-  req.headers.get("device-secret") ||
-  req.headers.get("x-device-secret") ||
+  req.headers.get("Authorization") ||
+  req.headers.get("x-Authorization") ||
   req.headers.get("authorization");
 
 const expected = `Bearer ${DEVICE_SECRET}`;
