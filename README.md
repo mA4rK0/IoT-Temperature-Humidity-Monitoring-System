@@ -261,7 +261,7 @@ select * from supabase_realtime.add_realtime_publication('sensor_data');
 
 ---
 
-# 📦 Folder Structure not ready
+# 📦 Folder Structure
 
 ```
 IoT-Temperature-Humidity-Monitoring-System
