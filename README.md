@@ -153,8 +153,7 @@ File: `/app/api/ingest/route.ts`
 
 # 📈 Dashboard Preview
 
-![Dashboard Screenshot](./docs/dashboard.png)
-Not Ready
+![Dashboard Screenshot](./docs/iot-temperature-humidity-dashboard.png)
 
 ### Includes:
 - Temperature + humidity cards  
