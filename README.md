@@ -265,10 +265,14 @@ select * from supabase_realtime.add_realtime_publication('sensor_data');
 
 ```
 IoT-Temperature-Humidity-Monitoring-System
+├── LICENCE
+├── README.md
 ├── config.example.h
 ├── config.h
+├── docs/
 ├── iot_code.ino
 └── front-end
+    ├── README.md
     ├── eslint.config.mjs
     ├── example.env
     ├── next-env.d.ts
